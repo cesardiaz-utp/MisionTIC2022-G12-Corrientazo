@@ -1,0 +1,55 @@
+@startuml
+
+class Mesa {
+    - String numero
+    + Integer calcularTotal()
+    + Integer pago(Integer efectivo)
+}
+
+class Pedido {
+    - Integer precio
+    - String cliente
+    + Integer calcularValor()
+}
+
+class Sopa {
+    String nombre
+}
+
+class Principio {
+    String nombre
+}
+
+class Carne {
+    String nombre
+}
+
+class Ensalada {
+    String nombre
+}
+
+class Jugo {
+    String nombre
+}
+
+enum EstadoPedido {
+    PENDIENTE_ENTREGAR
+    PENDIENTE_COBRAR
+}
+
+class Adicional {
+    String nombre
+    Integer precio
+}
+
+Mesa "1" -- "1..*" Pedido
+Pedido "0..*" *-- "0..1" Sopa
+Pedido "0..*" *-- "1" Principio
+Pedido "0..*" *-- "1" Carne
+Pedido "0..*" *-- "0..1" Ensalada
+Pedido "0..*" *-- "1" Jugo
+Pedido .left.> EstadoPedido
+Pedido "1" o-right- "0..*" Adicional
+
+
+@enduml
