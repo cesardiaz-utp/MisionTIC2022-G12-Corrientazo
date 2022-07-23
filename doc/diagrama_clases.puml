@@ -55,10 +55,10 @@ class Adicional {
 }
 
 Mesa "1" -- "1..*" Pedido
-Pedido "1" -- "1" OpcionPedido
+Pedido "1" o-- "1" OpcionPedido
 
 OpcionPedido <|-left- Completo
-OpcionPedido <|-right- Bandeja
+OpcionPedido <|-left- Bandeja
 
 Completo *-- "1" Sopa
 
@@ -68,7 +68,7 @@ OpcionPedido *-- "0..1" Ensalada
 OpcionPedido *-- "1" Jugo
 
 Pedido .left.> EstadoPedido
-Pedido "1" o-right- "0..*" Adicional
+Pedido "1" o-- "0..*" Adicional
 
 
 @enduml
