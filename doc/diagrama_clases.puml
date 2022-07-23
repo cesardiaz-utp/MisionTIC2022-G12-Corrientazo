@@ -7,9 +7,21 @@ class Mesa {
 }
 
 class Pedido {
-    - Integer precio
+    
     - String cliente
     + Integer calcularValor()
+}
+
+abstract class OpcionPedido {
+    - Integer precio
+}
+
+class Completo {
+
+}
+
+class Bandeja {
+
 }
 
 class Sopa {
@@ -43,11 +55,18 @@ class Adicional {
 }
 
 Mesa "1" -- "1..*" Pedido
-Pedido "0..*" *-- "0..1" Sopa
-Pedido "0..*" *-- "1" Principio
-Pedido "0..*" *-- "1" Carne
-Pedido "0..*" *-- "0..1" Ensalada
-Pedido "0..*" *-- "1" Jugo
+Pedido "1" -- "1" OpcionPedido
+
+OpcionPedido <|-left- Completo
+OpcionPedido <|-right- Bandeja
+
+Completo *-- "1" Sopa
+
+OpcionPedido *-- "1" Principio
+OpcionPedido *-- "1" Carne
+OpcionPedido *-- "0..1" Ensalada
+OpcionPedido *-- "1" Jugo
+
 Pedido .left.> EstadoPedido
 Pedido "1" o-right- "0..*" Adicional
 
