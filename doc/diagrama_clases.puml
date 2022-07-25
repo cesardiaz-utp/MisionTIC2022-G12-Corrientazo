@@ -1,4 +1,4 @@
-@startuml
+@startuml "Diagrama de Clases"
 
 class Mesa {
     - String numero
@@ -60,15 +60,15 @@ Pedido "1" o-- "1" OpcionPedido
 OpcionPedido <|-left- Completo
 OpcionPedido <|-left- Bandeja
 
-Completo *-- "1" Sopa
+Completo "*" *-- "1" Sopa
 
-OpcionPedido *-- "1" Principio
-OpcionPedido *-- "1" Carne
-OpcionPedido *-- "0..1" Ensalada
-OpcionPedido *-- "1" Jugo
+OpcionPedido "*" *-- "1" Principio
+OpcionPedido "*" *-- "1" Carne
+OpcionPedido "*" *-- "0..1" Ensalada
+OpcionPedido "*" *-- "1" Jugo
 
 Pedido .left.> EstadoPedido
-Pedido "1" o-- "0..*" Adicional
+Pedido "*" o-- "*" Adicional
 
 
 @enduml
