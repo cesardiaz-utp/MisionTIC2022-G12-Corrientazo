@@ -62,4 +62,10 @@ public abstract class OpcionPedido {
         this.jugo = jugo;
     }
 
+    @Override
+    public String toString() {
+        return "OpcionPedido [carne=" + carne + ", ensalada=" + ensalada + ", jugo=" + jugo + ", precio=" + precio
+                + ", principio=" + principio + "]";
+    }
+
 }

@@ -45,4 +45,9 @@ public class Mesa {
 
         return efectivo - total;
     } 
+
+    @Override
+    public String toString() {
+        return numero;
+    }
 }

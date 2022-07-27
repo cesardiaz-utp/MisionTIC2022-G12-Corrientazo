@@ -10,4 +10,9 @@ public class Sopa {
     public String getNombre() {
         return nombre;
     }
+
+    @Override
+    public String toString() {
+        return nombre;
+    }
 }

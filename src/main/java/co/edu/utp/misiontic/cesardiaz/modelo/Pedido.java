@@ -43,4 +43,10 @@ public class Pedido {
     public void entregar() {
         estado = EstadoPedido.PENDIENTE_COBRAR;
     }
+
+    @Override
+    public String toString() {
+        return "Pedido [cliente=" + cliente + ", estado=" + estado + ", opcion=" + opcion + "]";
+    }
+    
 }

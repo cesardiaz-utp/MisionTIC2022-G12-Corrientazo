@@ -1,5 +1,8 @@
 package co.edu.utp.misiontic.cesardiaz;
 
+import java.util.Scanner;
+
+import co.edu.utp.misiontic.cesardiaz.controlador.RestauranteController;
 import co.edu.utp.misiontic.cesardiaz.excepcion.PagoInsuficienteException;
 import co.edu.utp.misiontic.cesardiaz.modelo.Adicional;
 import co.edu.utp.misiontic.cesardiaz.modelo.Bandeja;
@@ -25,6 +28,29 @@ public final class App {
      * @param args The arguments of the program.
      */
     public static void main(String[] args) {
+
+        try (var sc = new Scanner(System.in)) {
+
+            var controlador = new RestauranteController(sc);
+
+            controlador.iniciarBaseDatos();
+
+
+            var mesa = controlador.consultarMesa("01");
+            System.out.println("La mesa consultada es: " + mesa);
+
+            controlador.agregarPedido(mesa);
+            System.out.println("El total de la mesa es: " + mesa.calcularTotal());
+
+            // pruebaVenta();
+        } catch (Exception ex) {
+            System.err.println("Ocurrio un error y salgo de la aplicación: \n\t" + ex.getMessage());
+            ex.printStackTrace();
+        }
+
+    }
+
+    private static void pruebaVenta() {
         var mesa = new Mesa("01");
 
         var sopa = new Sopa("Pastas");
@@ -57,7 +83,5 @@ public final class App {
         }
 
         System.out.printf("Ahora el total de la mesa: $ %,d. %n", mesa.calcularTotal());
-
-
     }
 }

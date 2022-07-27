@@ -10,4 +10,9 @@ public class Ensalada {
     public String getNombre() {
         return nombre;
     }
+
+    @Override
+    public String toString() {
+        return nombre;
+    }
 }
