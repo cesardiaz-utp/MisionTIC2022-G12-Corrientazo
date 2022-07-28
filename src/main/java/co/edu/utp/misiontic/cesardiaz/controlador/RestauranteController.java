@@ -5,11 +5,11 @@ import java.util.List;
 import java.util.Scanner;
 
 import co.edu.utp.misiontic.cesardiaz.excepcion.ObjetoNoExistenteException;
+import co.edu.utp.misiontic.cesardiaz.excepcion.PagoInsuficienteException;
 import co.edu.utp.misiontic.cesardiaz.modelo.Carne;
 import co.edu.utp.misiontic.cesardiaz.modelo.Ensalada;
 import co.edu.utp.misiontic.cesardiaz.modelo.Jugo;
 import co.edu.utp.misiontic.cesardiaz.modelo.Mesa;
-import co.edu.utp.misiontic.cesardiaz.modelo.Pedido;
 import co.edu.utp.misiontic.cesardiaz.modelo.Principio;
 import co.edu.utp.misiontic.cesardiaz.modelo.Sopa;
 import co.edu.utp.misiontic.cesardiaz.vista.MesaView;
@@ -121,5 +121,21 @@ public class RestauranteController {
 
     public List<Jugo> listarJugos() {
         return jugos;
+    }
+
+    public Integer pagarCuenta(Mesa mesa) throws PagoInsuficienteException {
+        // Solicitar el valor del efectivo 
+        var efectivo = mesaView.leerValorEfectivo();
+        
+        var total = mesa.calcularTotal();
+        if (efectivo < total) {
+            throw new PagoInsuficienteException("El efectivo no es suficiente para pagar el total de la mesa");
+        }
+
+        // Eliminar pedidos
+        mesa.limpiarPedidos();
+
+        return efectivo - total;
+
     }
 }
