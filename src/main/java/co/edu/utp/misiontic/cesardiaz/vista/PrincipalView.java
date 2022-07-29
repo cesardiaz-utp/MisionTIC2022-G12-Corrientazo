@@ -53,6 +53,7 @@ public class PrincipalView {
             System.out.println("4 -> Creacion de Opciones de Carne");
             System.out.println("5 -> Creacion de Opciones de Ensalada");
             System.out.println("6 -> Creacion de Opciones de Jugo");
+            System.out.println("7 -> Creacion de Adicionales");
             System.out.println("0 -> Volver al menú");
 
             var opcion = leerEntero("Ingrese su opcion: ");
@@ -76,6 +77,9 @@ public class PrincipalView {
                     // TODO: Implementar
                     break;
                 case 6:
+                    // TODO: Implementar
+                    break;
+                case 7:
                     // TODO: Implementar
                     break;
                 default:
