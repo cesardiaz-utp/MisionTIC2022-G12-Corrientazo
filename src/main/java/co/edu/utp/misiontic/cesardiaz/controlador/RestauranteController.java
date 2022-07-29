@@ -3,22 +3,26 @@ package co.edu.utp.misiontic.cesardiaz.controlador;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 import co.edu.utp.misiontic.cesardiaz.excepcion.ObjetoNoExistenteException;
 import co.edu.utp.misiontic.cesardiaz.excepcion.PagoInsuficienteException;
 import co.edu.utp.misiontic.cesardiaz.modelo.Carne;
 import co.edu.utp.misiontic.cesardiaz.modelo.Ensalada;
+import co.edu.utp.misiontic.cesardiaz.modelo.EstadoPedido;
 import co.edu.utp.misiontic.cesardiaz.modelo.Jugo;
 import co.edu.utp.misiontic.cesardiaz.modelo.Mesa;
 import co.edu.utp.misiontic.cesardiaz.modelo.Principio;
 import co.edu.utp.misiontic.cesardiaz.modelo.Sopa;
 import co.edu.utp.misiontic.cesardiaz.vista.MesaView;
 import co.edu.utp.misiontic.cesardiaz.vista.PedidoView;
+import co.edu.utp.misiontic.cesardiaz.vista.PrincipalView;
 
 public class RestauranteController {
 
     private MesaView mesaView;
     private PedidoView pedidoView;
+    private PrincipalView principalView;
 
     private List<Mesa> mesas;
     private List<Sopa> sopas;
@@ -30,6 +34,7 @@ public class RestauranteController {
     public RestauranteController(Scanner entrada) {
         mesaView = new MesaView(entrada);
         pedidoView = new PedidoView(entrada, this);
+        principalView = new PrincipalView(entrada, this);
 
         mesas = new ArrayList<>();
         sopas = new ArrayList<>();
@@ -67,12 +72,16 @@ public class RestauranteController {
         ensaladas.add(new Ensalada("Solo tomate"));
         ensaladas.add(new Ensalada("Jardinera"));
         ensaladas.add(new Ensalada("Remolacha y zanahoria"));
-        
-        jugos.add(new Jugo("Limonada"));   
-        jugos.add(new Jugo("Guayaba"));   
-        jugos.add(new Jugo("Mora"));   
-        jugos.add(new Jugo("Maracuyá"));   
 
+        jugos.add(new Jugo("Limonada"));
+        jugos.add(new Jugo("Guayaba"));
+        jugos.add(new Jugo("Mora"));
+        jugos.add(new Jugo("Maracuyá"));
+
+    }
+
+    public void iniciarAplicacion() {
+        principalView.iniciarAplicacion();
     }
 
     public void crearMesa() {
@@ -98,7 +107,7 @@ public class RestauranteController {
 
     public void agregarPedido(Mesa mesa) {
         var pedido = pedidoView.cargarPedido();
-        System.out.println("Pedido: "+pedido);
+        System.out.println("Pedido: " + pedido);
 
         mesa.agregarPedido(pedido);
     }
@@ -124,9 +133,9 @@ public class RestauranteController {
     }
 
     public Integer pagarCuenta(Mesa mesa) throws PagoInsuficienteException {
-        // Solicitar el valor del efectivo 
+        // Solicitar el valor del efectivo
         var efectivo = mesaView.leerValorEfectivo();
-        
+
         var total = mesa.calcularTotal();
         if (efectivo < total) {
             throw new PagoInsuficienteException("El efectivo no es suficiente para pagar el total de la mesa");
@@ -137,5 +146,59 @@ public class RestauranteController {
 
         return efectivo - total;
 
+    }
+
+    public Mesa seleccionarMesa() {
+        while (true) {
+            principalView.mostrarMensaje("Listado de mesas existentes");
+            for (int i = 0; i < mesas.size(); i++) {
+                principalView.mostrarMensaje(
+                        String.format("%d -> %s", (i + 1), mesas.get(i)));
+            }
+            var opcion = principalView.leerEntero("Cual es su elección: ");
+            if (opcion >= 1 && opcion <= mesas.size()) {
+                return mesas.get(opcion - 1);
+            } else {
+                principalView.mostrarError("Opcion inválida");
+            }
+        }
+    }
+
+    public void mostrarEstadoMesa(Mesa mesa) {
+        principalView.mostrarMensaje("Mesa: " + mesa);
+        mesa.getPedidos().stream()
+                .map(p -> p.toString())
+                .forEach(principalView::mostrarMensaje);
+    }
+
+    public void entregarPedido(Mesa mesa) {
+        var pedidos = mesa.getPedidos().stream()
+                .filter(p -> p.getEstado() == EstadoPedido.PENDIENTE_ENTREGA)
+                .collect(Collectors.toList());
+
+        if (pedidos.isEmpty()) {
+            principalView.mostrarError("La mesa no tiene pedidos a entregar");
+            return;
+        }
+
+        while (true) {
+            principalView.mostrarMensaje("Listado de pedidos pendientes");
+            for (int i = 0; i < pedidos.size(); i++) {
+                var pedido = pedidos.get(i);
+                if (pedido.getEstado() != EstadoPedido.PENDIENTE_ENTREGA) {
+                    continue;
+                }
+                principalView.mostrarMensaje(
+                        String.format("%d -> %s", (i + 1), pedidos.get(i)));
+            }
+            var opcion = principalView.leerEntero("Cual es su elección: ");
+            if (opcion >= 1 && opcion <= mesa.getPedidos().size()) {
+                pedidos.get(opcion - 1).entregar();
+
+                break;
+            } else {
+                principalView.mostrarError("Opcion inválida");
+            }
+        }
     }
 }

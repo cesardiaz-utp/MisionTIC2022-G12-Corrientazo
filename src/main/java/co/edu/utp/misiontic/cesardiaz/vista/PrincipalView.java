@@ -3,6 +3,7 @@ package co.edu.utp.misiontic.cesardiaz.vista;
 import java.util.Scanner;
 
 import co.edu.utp.misiontic.cesardiaz.controlador.RestauranteController;
+import co.edu.utp.misiontic.cesardiaz.excepcion.PagoInsuficienteException;
 
 public class PrincipalView {
 
@@ -43,33 +44,87 @@ public class PrincipalView {
     }
 
     private void gestionDatosMaestros() {
-        System.out.println(".: GESTION DE DATOS MAESTROS :. ");
+        var mostrarMenu = true;
+        while (mostrarMenu) {
+            System.out.println(".: GESTION DE DATOS MAESTROS :.");
+            System.out.println("1 -> Creacion de mesas");
+            System.out.println("2 -> Creacion de Opciones de Sopa");
+            System.out.println("3 -> Creacion de Opciones de Principio");
+            System.out.println("4 -> Creacion de Opciones de Carne");
+            System.out.println("5 -> Creacion de Opciones de Ensalada");
+            System.out.println("6 -> Creacion de Opciones de Jugo");
+            System.out.println("0 -> Volver al menú");
+
+            var opcion = leerEntero("Ingrese su opcion: ");
+            switch (opcion) {
+                case 0:
+                    mostrarMenu = false;
+                    break;
+                case 1:
+                    controller.crearMesa();
+                    break;
+                case 2:
+                    // TODO: Implementar
+                    break;
+                case 3:
+                    // TODO: Implementar
+                    break;
+                case 4:
+                    // TODO: Implementar
+                    break;
+                case 5:
+                    // TODO: Implementar
+                    break;
+                case 6:
+                    // TODO: Implementar
+                    break;
+                default:
+                    System.out.println("Opcion inválida. Intente de nuevo");
+                    break;
+            }
+            esperarEnter();
+        }
     }
 
     private void gestionPedidos() {
         var mesa = controller.seleccionarMesa();
-        
+
         System.out.println(".: GESTION DE PEDIDOS :.");
         System.out.println("1 -> Agregar pedido a mesa");
         System.out.println("2 -> Agregar adicional a mesa");
-        System.out.println("3 -> Pagar deuda mesa");
-        System.out.println("4 -> Consultar estado de la mesa");
+        System.out.println("3 -> Entregar pedido");
+        System.out.println("4 -> Pagar deuda mesa");
+        System.out.println("5 -> Consultar estado de la mesa");
         System.out.println("0 -> Volver al menu principal");
         var opcion = leerEntero("Ingrese su opcion: ");
         switch (opcion) {
             case 0:
-                esperarEnter();
                 break;
             case 1:
-                
+                controller.agregarPedido(mesa);
                 break;
             case 2:
-                gestionDatosMaestros();
+                // TODO: Agregar adicional a pedido
+                break;
+            case 3:
+                controller.entregarPedido(mesa);
+                break;
+            case 4:
+                try {
+                    var devuelta = controller.pagarCuenta(mesa);
+                    System.out.printf("La devuelta es de $ %,d %n", devuelta);
+                } catch (PagoInsuficienteException e) {
+                    mostrarError(e.getMessage());
+                }
+                break;
+            case 5:
+                controller.mostrarEstadoMesa(mesa);
                 break;
             default:
                 System.out.println("Opcion inválida. Intente de nuevo");
                 break;
         }
+        esperarEnter();
     }
 
     private void esperarEnter() {
@@ -77,7 +132,15 @@ public class PrincipalView {
         entrada.nextLine();
     }
 
-    private Integer leerEntero(String mensaje) {
+    public void mostrarMensaje(String mensaje) {
+        System.out.println(mensaje);
+    }
+
+    public void mostrarError(String error) {
+        System.err.println(error);
+    }
+
+    public Integer leerEntero(String mensaje) {
         return leerEntero(mensaje, Integer.MIN_VALUE, Integer.MAX_VALUE);
     }
 

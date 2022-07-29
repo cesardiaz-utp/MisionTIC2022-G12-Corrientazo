@@ -17,6 +17,10 @@ public class Mesa {
         return numero;
     }
 
+    public List<Pedido> getPedidos() {
+        return pedidos;
+    }
+
     public void entregarPedido(Pedido pedido) {
         pedido.entregar();
     }
@@ -27,9 +31,10 @@ public class Mesa {
 
     public Integer calcularTotal() {
         return this.pedidos.stream()
-            .map(pedido -> pedido.calcularValor())
-            .reduce((a, b) -> a + b)
-            .orElse(0);
+                .filter(pedido -> pedido.getEstado() == EstadoPedido.PENDIENTE_COBRAR)
+                .map(pedido -> pedido.calcularValor())
+                .reduce((a, b) -> a + b)
+                .orElse(0);
     }
 
     @Override
