@@ -1,8 +1,10 @@
 package co.edu.utp.misiontic.cesardiaz.vista;
 
+import java.sql.SQLException;
 import java.util.Scanner;
 
 import co.edu.utp.misiontic.cesardiaz.controlador.RestauranteController;
+import co.edu.utp.misiontic.cesardiaz.excepcion.ObjetoNoExistenteException;
 import co.edu.utp.misiontic.cesardiaz.excepcion.PagoInsuficienteException;
 
 public class PrincipalView {
@@ -22,28 +24,31 @@ public class PrincipalView {
             System.out.println("1 -> Gestion de pedidos");
             System.out.println("2 -> Gestion de datos maestros");
             System.out.println("0 -> Salir de la aplicación");
-
-            var opcion = leerEntero("Ingrese su opcion: ");
-            switch (opcion) {
-                case 0:
-                    mostrarMenu = false;
-                    System.out.println("Hasta pronto!");
-                    break;
-                case 1:
-                    gestionPedidos();
-                    break;
-                case 2:
-                    gestionDatosMaestros();
-                    break;
-                default:
-                    System.out.println("Opcion inválida. Intente de nuevo");
-                    break;
+            try {
+                var opcion = leerEntero("Ingrese su opcion: ");
+                switch (opcion) {
+                    case 0:
+                        mostrarMenu = false;
+                        System.out.println("Hasta pronto!");
+                        break;
+                    case 1:
+                        gestionPedidos();
+                        break;
+                    case 2:
+                        gestionDatosMaestros();
+                        break;
+                    default:
+                        System.out.println("Opcion inválida. Intente de nuevo");
+                        break;
+                }
+            } catch (SQLException ex) {
+                System.err.println("Ha ocurrido un error con la base de datos.");
+                System.err.println("\t" + ex.getMessage());
             }
-
         }
     }
 
-    private void gestionDatosMaestros() {
+    private void gestionDatosMaestros() throws SQLException {
         var mostrarMenu = true;
         while (mostrarMenu) {
             System.out.println(".: GESTION DE DATOS MAESTROS :.");
@@ -55,7 +60,6 @@ public class PrincipalView {
             System.out.println("6 -> Creacion de Opciones de Jugo");
             System.out.println("7 -> Creacion de Adicionales");
             System.out.println("0 -> Volver al menú");
-
             var opcion = leerEntero("Ingrese su opcion: ");
             switch (opcion) {
                 case 0:
@@ -90,7 +94,7 @@ public class PrincipalView {
         }
     }
 
-    private void gestionPedidos() {
+    private void gestionPedidos() throws SQLException {
         var mesa = controller.seleccionarMesa();
 
         System.out.println(".: GESTION DE PEDIDOS :.");
@@ -119,6 +123,8 @@ public class PrincipalView {
                     System.out.printf("La devuelta es de $ %,d %n", devuelta);
                 } catch (PagoInsuficienteException e) {
                     mostrarError(e.getMessage());
+                } catch (ObjetoNoExistenteException e) {
+                    mostrarError("La información de los pedidos es inconsistente");
                 }
                 break;
             case 5:

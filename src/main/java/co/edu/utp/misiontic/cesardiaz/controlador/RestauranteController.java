@@ -1,6 +1,6 @@
 package co.edu.utp.misiontic.cesardiaz.controlador;
 
-import java.util.ArrayList;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -14,6 +14,9 @@ import co.edu.utp.misiontic.cesardiaz.modelo.Jugo;
 import co.edu.utp.misiontic.cesardiaz.modelo.Mesa;
 import co.edu.utp.misiontic.cesardiaz.modelo.Principio;
 import co.edu.utp.misiontic.cesardiaz.modelo.Sopa;
+import co.edu.utp.misiontic.cesardiaz.modelo.dao.MesaDao;
+import co.edu.utp.misiontic.cesardiaz.modelo.dao.OpcionAlimentoDao;
+import co.edu.utp.misiontic.cesardiaz.modelo.dao.PedidoDao;
 import co.edu.utp.misiontic.cesardiaz.vista.MesaView;
 import co.edu.utp.misiontic.cesardiaz.vista.PedidoView;
 import co.edu.utp.misiontic.cesardiaz.vista.PrincipalView;
@@ -24,67 +27,25 @@ public class RestauranteController {
     private PedidoView pedidoView;
     private PrincipalView principalView;
 
-    private List<Mesa> mesas;
-    private List<Sopa> sopas;
-    private List<Principio> principios;
-    private List<Carne> carnes;
-    private List<Ensalada> ensaladas;
-    private List<Jugo> jugos;
+    private MesaDao mesaDao;
+    private PedidoDao pedidoDao;
+    private OpcionAlimentoDao alimentoDao;
 
     public RestauranteController(Scanner entrada) {
         mesaView = new MesaView(entrada);
         pedidoView = new PedidoView(entrada, this);
         principalView = new PrincipalView(entrada, this);
 
-        mesas = new ArrayList<>();
-        sopas = new ArrayList<>();
-        principios = new ArrayList<>();
-        carnes = new ArrayList<>();
-        ensaladas = new ArrayList<>();
-        jugos = new ArrayList<>();
-    }
-
-    // TODO: Es un método temporal
-    public void iniciarBaseDatos() {
-        mesas.add(new Mesa("01"));
-        mesas.add(new Mesa("02"));
-        mesas.add(new Mesa("03"));
-        mesas.add(new Mesa("04"));
-        mesas.add(new Mesa("05"));
-        mesas.add(new Mesa("06"));
-        mesas.add(new Mesa("07"));
-
-        sopas.add(new Sopa("Pastas"));
-        sopas.add(new Sopa("Sancocho"));
-        sopas.add(new Sopa("Crema Ahuyama"));
-        sopas.add(new Sopa("Consome"));
-
-        principios.add(new Principio("Frijoles"));
-        principios.add(new Principio("Lentejas"));
-        principios.add(new Principio("Espaguetis"));
-        principios.add(new Principio("Papa guisada"));
-
-        carnes.add(new Carne("Res a la plancha"));
-        carnes.add(new Carne("Cerdo a la plancha"));
-        carnes.add(new Carne("Pechuga a la plancha"));
-        carnes.add(new Carne("Albondigas"));
-
-        ensaladas.add(new Ensalada("Solo tomate"));
-        ensaladas.add(new Ensalada("Jardinera"));
-        ensaladas.add(new Ensalada("Remolacha y zanahoria"));
-
-        jugos.add(new Jugo("Limonada"));
-        jugos.add(new Jugo("Guayaba"));
-        jugos.add(new Jugo("Mora"));
-        jugos.add(new Jugo("Maracuyá"));
-
+        mesaDao = new MesaDao();
+        pedidoDao = new PedidoDao();
+        alimentoDao = new OpcionAlimentoDao();
     }
 
     public void iniciarAplicacion() {
         principalView.iniciarAplicacion();
     }
 
-    public void crearMesa() {
+    public void crearMesa() throws SQLException {
         // Pedir al usuario el número de la mesa a crear
         var numeroMesa = mesaView.leerNumeroMesa();
 
@@ -92,65 +53,80 @@ public class RestauranteController {
         var mesa = new Mesa(numeroMesa);
 
         // Agregarlo a la lista de mesas en el sistema
-        mesas.add(mesa);
+        mesaDao.crear(mesa);
 
         // Mostrar al usuario las mesas actualizadas
-        mesaView.mostrarMesas(mesas);
+        mesaView.mostrarMesas(mesaDao.listar());
     }
 
-    public Mesa consultarMesa(String numero) throws ObjetoNoExistenteException {
-        return mesas.stream()
-                .filter(mesa -> mesa.getNumero().equals(numero))
-                .findFirst()
-                .orElseThrow(() -> new ObjetoNoExistenteException("No existe una mesa con el número " + numero));
+    public Mesa consultarMesa(String numero) throws ObjetoNoExistenteException, SQLException {
+        return mesaDao.consultar(numero);
     }
 
-    public void agregarPedido(Mesa mesa) {
+    public void agregarPedido(Mesa mesa) throws SQLException {
+        // Pedir al usuario los datos del pedido
         var pedido = pedidoView.cargarPedido();
         System.out.println("Pedido: " + pedido);
 
+        // Agregar el pedido a la mesa
         mesa.agregarPedido(pedido);
+
+        // Guardar pedido en base de datos
+        pedido.setMesa(mesa);
+        pedidoDao.crear(pedido);
     }
 
-    public List<Sopa> listarSopas() {
-        return sopas;
+    public List<Sopa> listarSopas() throws SQLException {
+        return alimentoDao.listarSopas();
     }
 
-    public List<Principio> listarPrincipios() {
-        return principios;
+    public List<Principio> listarPrincipios() throws SQLException {
+        return alimentoDao.listarPrincipios();
     }
 
-    public List<Carne> listarCarnes() {
-        return carnes;
+    public List<Carne> listarCarnes() throws SQLException {
+        return alimentoDao.listarCarnes();
     }
 
-    public List<Ensalada> listarEnsaladas() {
-        return ensaladas;
+    public List<Ensalada> listarEnsaladas() throws SQLException {
+        return alimentoDao.listarEnsaladas();
     }
 
-    public List<Jugo> listarJugos() {
-        return jugos;
+    public List<Jugo> listarJugos() throws SQLException {
+        return alimentoDao.listarJugos();
     }
 
-    public Integer pagarCuenta(Mesa mesa) throws PagoInsuficienteException {
+    private Integer calcularTotalMesa(Mesa mesa) throws SQLException, ObjetoNoExistenteException {
+        var pedidos = pedidoDao.listarPedidos(mesa);
+        return pedidos.stream()
+                .filter(pedido -> pedido.getEstado() == EstadoPedido.PENDIENTE_COBRAR)
+                .map(pedido -> pedido.calcularValor())
+                .reduce((a, b) -> a + b)
+                .orElse(0);
+    }
+
+    public Integer pagarCuenta(Mesa mesa) throws PagoInsuficienteException, SQLException, ObjetoNoExistenteException {
         // Solicitar el valor del efectivo
+        var total = calcularTotalMesa(mesa);
+        principalView.mostrarMensaje(String.format("La cuenta es de $ %,d.", total));
+
         var efectivo = mesaView.leerValorEfectivo();
 
-        var total = mesa.calcularTotal();
         if (efectivo < total) {
             throw new PagoInsuficienteException("El efectivo no es suficiente para pagar el total de la mesa");
         }
 
         // Eliminar pedidos
-        mesa.limpiarPedidos();
+        pedidoDao.borrarPedidosMesa(mesa);
 
         return efectivo - total;
 
     }
 
-    public Mesa seleccionarMesa() {
+    public Mesa seleccionarMesa() throws SQLException {
         while (true) {
             principalView.mostrarMensaje("Listado de mesas existentes");
+            var mesas = mesaDao.listar();
             for (int i = 0; i < mesas.size(); i++) {
                 principalView.mostrarMensaje(
                         String.format("%d -> %s", (i + 1), mesas.get(i)));
@@ -164,41 +140,55 @@ public class RestauranteController {
         }
     }
 
-    public void mostrarEstadoMesa(Mesa mesa) {
+    public void mostrarEstadoMesa(Mesa mesa) throws SQLException {
         principalView.mostrarMensaje("Mesa: " + mesa);
-        mesa.getPedidos().stream()
-                .map(p -> p.toString())
-                .forEach(principalView::mostrarMensaje);
+        try {
+            pedidoDao.listarPedidos(mesa).stream()
+                    .map(p -> p.toString())
+                    .forEach(principalView::mostrarMensaje);
+
+            var total = calcularTotalMesa(mesa);
+            principalView.mostrarMensaje(String.format("Estan debiendo $ %,d.", total));
+        } catch (ObjetoNoExistenteException ex) {
+            principalView.mostrarMensaje("No hay pedidos para esta mesa");
+        }
     }
 
-    public void entregarPedido(Mesa mesa) {
-        var pedidos = mesa.getPedidos().stream()
-                .filter(p -> p.getEstado() == EstadoPedido.PENDIENTE_ENTREGA)
-                .collect(Collectors.toList());
+    public void entregarPedido(Mesa mesa) throws SQLException {
+        try {
+            var pedidosMesa = pedidoDao.listarPedidos(mesa);
+            var pedidos = pedidosMesa.stream()
+                    .filter(p -> p.getEstado() == EstadoPedido.PENDIENTE_ENTREGA)
+                    .collect(Collectors.toList());
 
-        if (pedidos.isEmpty()) {
-            principalView.mostrarError("La mesa no tiene pedidos a entregar");
-            return;
-        }
+            if (pedidos.isEmpty()) {
+                principalView.mostrarError("La mesa no tiene pedidos a entregar");
+                return;
+            }
 
-        while (true) {
-            principalView.mostrarMensaje("Listado de pedidos pendientes");
-            for (int i = 0; i < pedidos.size(); i++) {
-                var pedido = pedidos.get(i);
-                if (pedido.getEstado() != EstadoPedido.PENDIENTE_ENTREGA) {
-                    continue;
+            while (true) {
+                principalView.mostrarMensaje("Listado de pedidos pendientes");
+                for (int i = 0; i < pedidos.size(); i++) {
+                    var pedido = pedidos.get(i);
+                    if (pedido.getEstado() != EstadoPedido.PENDIENTE_ENTREGA) {
+                        continue;
+                    }
+                    principalView.mostrarMensaje(
+                            String.format("%d -> %s", (i + 1), pedidos.get(i)));
                 }
-                principalView.mostrarMensaje(
-                        String.format("%d -> %s", (i + 1), pedidos.get(i)));
-            }
-            var opcion = principalView.leerEntero("Cual es su elección: ");
-            if (opcion >= 1 && opcion <= mesa.getPedidos().size()) {
-                pedidos.get(opcion - 1).entregar();
+                var opcion = principalView.leerEntero("Cual es su elección: ");
+                if (opcion >= 1 && opcion <= pedidosMesa.size()) {
+                    var pedido = pedidos.get(opcion - 1);
+                    pedido.entregar();
+                    pedidoDao.actualizarEstadoPedido(pedido);
 
-                break;
-            } else {
-                principalView.mostrarError("Opcion inválida");
+                    break;
+                } else {
+                    principalView.mostrarError("Opcion inválida");
+                }
             }
+        } catch (ObjetoNoExistenteException ex) {
+            principalView.mostrarError("No hay pedidos pendientes por entregar");
         }
     }
 }

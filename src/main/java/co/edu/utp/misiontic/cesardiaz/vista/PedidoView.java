@@ -1,5 +1,6 @@
 package co.edu.utp.misiontic.cesardiaz.vista;
 
+import java.sql.SQLException;
 import java.util.Scanner;
 
 import co.edu.utp.misiontic.cesardiaz.controlador.RestauranteController;
@@ -8,6 +9,7 @@ import co.edu.utp.misiontic.cesardiaz.modelo.Carne;
 import co.edu.utp.misiontic.cesardiaz.modelo.Completo;
 import co.edu.utp.misiontic.cesardiaz.modelo.Ensalada;
 import co.edu.utp.misiontic.cesardiaz.modelo.Jugo;
+import co.edu.utp.misiontic.cesardiaz.modelo.Mesa;
 import co.edu.utp.misiontic.cesardiaz.modelo.OpcionPedido;
 import co.edu.utp.misiontic.cesardiaz.modelo.Pedido;
 import co.edu.utp.misiontic.cesardiaz.modelo.Principio;
@@ -23,7 +25,7 @@ public class PedidoView {
         this.controller = controller;
     }
 
-    public Pedido cargarPedido() {
+    public Pedido cargarPedido() throws SQLException {
 
         // Pedir el nombre del cliente
         System.out.print("Ingrese el nombre (descripcion) del cliente: ");
@@ -60,7 +62,7 @@ public class PedidoView {
         return new Pedido(cliente, opcion);
     }
 
-    private Sopa elejirOpcionSopa() {
+    private Sopa elejirOpcionSopa() throws SQLException {
         Sopa respuesta = null;
         var opciones = controller.listarSopas();
         do {
@@ -82,7 +84,7 @@ public class PedidoView {
         return respuesta;
     }
 
-    private Principio elejirOpcionPrincipio() {
+    private Principio elejirOpcionPrincipio() throws SQLException {
         Principio respuesta = null;
         var opciones = controller.listarPrincipios();
         do {
@@ -104,7 +106,7 @@ public class PedidoView {
         return respuesta;
     }
 
-    private Carne elejirOpcionCarne() {
+    private Carne elejirOpcionCarne() throws SQLException {
         Carne respuesta = null;
         var opciones = controller.listarCarnes();
         do {
@@ -126,7 +128,7 @@ public class PedidoView {
         return respuesta;
     }
 
-    private Ensalada elejirOpcionEnsalada() {
+    private Ensalada elejirOpcionEnsalada() throws SQLException {
         Ensalada respuesta = null;
         var opciones = controller.listarEnsaladas();
         do {
@@ -152,7 +154,7 @@ public class PedidoView {
         return respuesta;
     }
 
-    private Jugo elejirOpcionJugo() {
+    private Jugo elejirOpcionJugo() throws SQLException {
         Jugo respuesta = null;
         var opciones = controller.listarJugos();
         do {

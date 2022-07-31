@@ -7,18 +7,25 @@ public class Mesa {
     private String numero;
     private List<Pedido> pedidos;
 
+    // Por usar base de datos
+    private Integer id;
+
     public Mesa(String numero) {
         this.numero = numero;
 
         this.pedidos = new ArrayList<>();
     }
 
-    public String getNumero() {
-        return numero;
+    public Integer getId() {
+        return id;
     }
 
-    public List<Pedido> getPedidos() {
-        return pedidos;
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getNumero() {
+        return numero;
     }
 
     public void entregarPedido(Pedido pedido) {
@@ -29,20 +36,9 @@ public class Mesa {
         this.pedidos.add(pedido);
     }
 
-    public Integer calcularTotal() {
-        return this.pedidos.stream()
-                .filter(pedido -> pedido.getEstado() == EstadoPedido.PENDIENTE_COBRAR)
-                .map(pedido -> pedido.calcularValor())
-                .reduce((a, b) -> a + b)
-                .orElse(0);
-    }
-
     @Override
     public String toString() {
         return numero;
     }
 
-    public void limpiarPedidos() {
-        pedidos.clear();
-    }
 }

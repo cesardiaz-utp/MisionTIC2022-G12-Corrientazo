@@ -2,9 +2,19 @@ package co.edu.utp.misiontic.cesardiaz.modelo;
 
 public class Carne {
     private String nombre;
+    // Solo por manejo de base de datos
+    private Integer id;
 
     public Carne(String nombre) {
         this.nombre = nombre;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getId() {
+        return id;
     }
 
     public String getNombre() {

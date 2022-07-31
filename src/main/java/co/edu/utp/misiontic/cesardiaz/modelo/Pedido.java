@@ -9,6 +9,10 @@ public class Pedido {
     private EstadoPedido estado;
     private OpcionPedido opcion;
     private List<Adicional> adicionales;
+    private Mesa mesa;
+
+    // Solo por manejo de base de datos
+    private Integer id;
 
     public Pedido(String cliente, OpcionPedido opcion) {
         this.cliente = cliente;
@@ -16,6 +20,30 @@ public class Pedido {
 
         this.estado = EstadoPedido.PENDIENTE_ENTREGA;
         adicionales = new ArrayList<>();
+    }
+
+    public void setEstado(EstadoPedido estado) {
+        this.estado = estado;
+    }
+
+    public void setMesa(Mesa mesa) {
+        this.mesa = mesa;
+    }
+
+    public Mesa getMesa() {
+        return mesa;
+    }
+
+    public OpcionPedido getOpcion() {
+        return opcion;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getId() {
+        return id;
     }
 
     public String getCliente() {
