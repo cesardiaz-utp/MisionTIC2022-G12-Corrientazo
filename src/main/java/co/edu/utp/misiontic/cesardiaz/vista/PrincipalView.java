@@ -3,16 +3,16 @@ package co.edu.utp.misiontic.cesardiaz.vista;
 import java.sql.SQLException;
 import java.util.Scanner;
 
-import co.edu.utp.misiontic.cesardiaz.controlador.RestauranteController;
+import co.edu.utp.misiontic.cesardiaz.controlador.RestauranteConsolaController;
 import co.edu.utp.misiontic.cesardiaz.excepcion.ObjetoNoExistenteException;
 import co.edu.utp.misiontic.cesardiaz.excepcion.PagoInsuficienteException;
 
 public class PrincipalView {
 
     private Scanner entrada;
-    private RestauranteController controller;
+    private RestauranteConsolaController controller;
 
-    public PrincipalView(Scanner entrada, RestauranteController controller) {
+    public PrincipalView(Scanner entrada, RestauranteConsolaController controller) {
         this.entrada = entrada;
         this.controller = controller;
     }

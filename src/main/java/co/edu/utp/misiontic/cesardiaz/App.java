@@ -2,7 +2,7 @@ package co.edu.utp.misiontic.cesardiaz;
 
 import java.util.Scanner;
 
-import co.edu.utp.misiontic.cesardiaz.controlador.RestauranteController;
+import co.edu.utp.misiontic.cesardiaz.controlador.RestauranteConsolaController;
 
 /**
  * Hello world!
@@ -20,7 +20,7 @@ public final class App {
 
         try (var sc = new Scanner(System.in)) {
 
-            var controlador = new RestauranteController(sc);
+            var controlador = new RestauranteConsolaController(sc);
 
             controlador.iniciarAplicacion();
 

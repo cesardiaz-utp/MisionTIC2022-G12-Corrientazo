@@ -2,7 +2,12 @@ package co.edu.utp.misiontic.cesardiaz.util;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
 
 // DAO -> Data Access Object
 
@@ -24,5 +29,29 @@ public class JDBCUtilities {
             connection.close();
             connection = null;
         }
+    }
+
+    public static <T> List<T> listar(String sql, Function<ResultSet, T> function)
+            throws SQLException {
+        List<T> response;
+        PreparedStatement stmt = null;
+        ResultSet rset = null;
+        try {
+            stmt = getConnection().prepareStatement(sql);
+            rset = stmt.executeQuery();
+
+            response = new ArrayList<>();
+            while (rset.next()) {
+                response.add(function.apply(rset));
+            }
+        } finally {
+            if (rset != null) {
+                rset.close();
+            }
+            if (stmt != null) {
+                stmt.close();
+            }
+        }
+        return response;
     }
 }

@@ -3,7 +3,7 @@ package co.edu.utp.misiontic.cesardiaz.vista;
 import java.sql.SQLException;
 import java.util.Scanner;
 
-import co.edu.utp.misiontic.cesardiaz.controlador.RestauranteController;
+import co.edu.utp.misiontic.cesardiaz.controlador.RestauranteConsolaController;
 import co.edu.utp.misiontic.cesardiaz.modelo.Bandeja;
 import co.edu.utp.misiontic.cesardiaz.modelo.Carne;
 import co.edu.utp.misiontic.cesardiaz.modelo.Completo;
@@ -18,9 +18,9 @@ import co.edu.utp.misiontic.cesardiaz.modelo.Sopa;
 public class PedidoView {
 
     private Scanner entrada;
-    private RestauranteController controller;
+    private RestauranteConsolaController controller;
 
-    public PedidoView(Scanner entrada, RestauranteController controller) {
+    public PedidoView(Scanner entrada, RestauranteConsolaController controller) {
         this.entrada = entrada;
         this.controller = controller;
     }

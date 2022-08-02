@@ -17,37 +17,33 @@ import co.edu.utp.misiontic.cesardiaz.util.JDBCUtilities;
 public class OpcionAlimentoDao {
 
     public List<Sopa> listarSopas() throws SQLException {
-        var respuesta = new ArrayList<Sopa>();
-
-        var statement = JDBCUtilities.getConnection().createStatement();
-        var rset = statement.executeQuery("SELECT * FROM Sopa");
-        while (rset.next()) {
-            var opcion = new Sopa(rset.getString("nombre"));
-            opcion.setId(rset.getInt("id"));
-
-            respuesta.add(opcion);
-        }
-        rset.close();
-        statement.close();
-
-        return respuesta;
+        var sql = "SELECT * FROM Sopa";
+        return JDBCUtilities.listar(sql, rset -> {
+            Sopa opcion =  null;
+            try {
+                opcion = new Sopa(rset.getString("nombre"));
+                opcion.setId(rset.getInt("id"));
+            } catch (SQLException ex) {
+                opcion = null;
+            }
+            
+            return opcion;
+        });
     }
 
     public List<Principio> listarPrincipios() throws SQLException {
-        var respuesta = new ArrayList<Principio>();
-
-        var statement = JDBCUtilities.getConnection().createStatement();
-        var rset = statement.executeQuery("SELECT * FROM Principio");
-        while (rset.next()) {
-            var opcion = new Principio(rset.getString("nombre"));
-            opcion.setId(rset.getInt("id"));
-
-            respuesta.add(opcion);
-        }
-        rset.close();
-        statement.close();
-
-        return respuesta;
+        var sql = "SELECT * FROM Principio";
+        return JDBCUtilities.listar(sql, rset -> {
+            Principio opcion =  null;
+            try {
+                opcion = new Principio(rset.getString("nombre"));
+                opcion.setId(rset.getInt("id"));
+            } catch (SQLException ex) {
+                opcion = null;
+            }
+            
+            return opcion;
+        });
     }
 
     public List<Carne> listarCarnes() throws SQLException {

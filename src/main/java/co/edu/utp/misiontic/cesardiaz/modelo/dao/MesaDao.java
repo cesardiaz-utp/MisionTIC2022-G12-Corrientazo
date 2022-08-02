@@ -13,18 +13,18 @@ import co.edu.utp.misiontic.cesardiaz.util.JDBCUtilities;
 public class MesaDao {
 
     public List<Mesa> listar() throws SQLException {
-        var respuesta = new ArrayList<Mesa>();
-
-        var statement = JDBCUtilities.getConnection().createStatement();
-        var rset = statement.executeQuery("SELECT * FROM Mesa");
-        while (rset.next()) {
-            var mesa = new Mesa(rset.getString("numero"));
-            mesa.setId(rset.getInt("id"));
-
-            respuesta.add(mesa);
-        }
-        rset.close();
-        statement.close();
+        var sql = "SELECT * FROM Mesa";
+        var respuesta = JDBCUtilities.listar(sql,
+                rset -> {
+                    Mesa mesa = null;
+                    try {
+                        mesa = new Mesa(rset.getString("numero"));
+                        mesa.setId(rset.getInt("id"));
+                    } catch (SQLException e) {
+                        mesa = null;
+                    }
+                    return mesa;
+                });
 
         return respuesta;
     }

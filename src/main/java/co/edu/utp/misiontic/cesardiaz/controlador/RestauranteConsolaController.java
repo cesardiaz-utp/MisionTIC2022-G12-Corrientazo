@@ -21,7 +21,7 @@ import co.edu.utp.misiontic.cesardiaz.vista.MesaView;
 import co.edu.utp.misiontic.cesardiaz.vista.PedidoView;
 import co.edu.utp.misiontic.cesardiaz.vista.PrincipalView;
 
-public class RestauranteController {
+public class RestauranteConsolaController {
 
     private MesaView mesaView;
     private PedidoView pedidoView;
@@ -31,7 +31,7 @@ public class RestauranteController {
     private PedidoDao pedidoDao;
     private OpcionAlimentoDao alimentoDao;
 
-    public RestauranteController(Scanner entrada) {
+    public RestauranteConsolaController(Scanner entrada) {
         mesaView = new MesaView(entrada);
         pedidoView = new PedidoView(entrada, this);
         principalView = new PrincipalView(entrada, this);
