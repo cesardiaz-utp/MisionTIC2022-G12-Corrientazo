@@ -6,9 +6,23 @@
 package co.edu.utp.misiontic.cesardiaz.vista;
 
 import co.edu.utp.misiontic.cesardiaz.controlador.RestauranteGUIController;
+import co.edu.utp.misiontic.cesardiaz.excepcion.ObjetoNoExistenteException;
+import co.edu.utp.misiontic.cesardiaz.modelo.Adicional;
+import co.edu.utp.misiontic.cesardiaz.modelo.Bandeja;
+import co.edu.utp.misiontic.cesardiaz.modelo.Carne;
+import co.edu.utp.misiontic.cesardiaz.modelo.Completo;
+import co.edu.utp.misiontic.cesardiaz.modelo.Ensalada;
+import co.edu.utp.misiontic.cesardiaz.modelo.Jugo;
 import co.edu.utp.misiontic.cesardiaz.modelo.Mesa;
+import co.edu.utp.misiontic.cesardiaz.modelo.OpcionPedido;
+import co.edu.utp.misiontic.cesardiaz.modelo.Pedido;
+import co.edu.utp.misiontic.cesardiaz.modelo.Principio;
 import co.edu.utp.misiontic.cesardiaz.modelo.Sopa;
+import co.edu.utp.misiontic.cesardiaz.vista.modelo.AdicionalModel;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 
@@ -27,8 +41,11 @@ public class FrmPrincipal extends javax.swing.JFrame {
         controlador = new RestauranteGUIController();
         
         initComponents();
+        setLocationRelativeTo(null);
         
         cargarDatos();
+        limpiarCampos();
+        asignarEstadoCampos(false);
     }
 
     /**
@@ -40,6 +57,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        buttonGroup1 = new javax.swing.ButtonGroup();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -65,9 +83,12 @@ public class FrmPrincipal extends javax.swing.JFrame {
         cmbEnsalada = new javax.swing.JComboBox<>();
         jLabel8 = new javax.swing.JLabel();
         cmbJugo = new javax.swing.JComboBox<>();
+        cmbAdicional = new javax.swing.JComboBox<>();
         btnAgregarAdicional = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
         tblAdicionales = new javax.swing.JTable();
+        jLabel9 = new javax.swing.JLabel();
+        btnGuardar = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -79,6 +100,11 @@ public class FrmPrincipal extends javax.swing.JFrame {
         jScrollPane1.setPreferredSize(new java.awt.Dimension(200, 130));
 
         lstMesas.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        lstMesas.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                lstMesasValueChanged(evt);
+            }
+        });
         jScrollPane1.setViewportView(lstMesas);
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
@@ -87,14 +113,21 @@ public class FrmPrincipal extends javax.swing.JFrame {
 
         jScrollPane2.setPreferredSize(new java.awt.Dimension(200, 122));
 
-        lstPedido.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
+        lstPedido.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        lstPedido.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                lstPedidoValueChanged(evt);
+            }
         });
         jScrollPane2.setViewportView(lstPedido);
 
         btnAgregarPedido.setText("Agregar Pedido");
+        btnAgregarPedido.setEnabled(false);
+        btnAgregarPedido.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAgregarPedidoActionPerformed(evt);
+            }
+        });
 
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         jLabel3.setText("Cliente");
@@ -102,10 +135,22 @@ public class FrmPrincipal extends javax.swing.JFrame {
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         jLabel4.setText("Opción de pedido");
 
+        buttonGroup1.add(rdCompleto);
         rdCompleto.setSelected(true);
         rdCompleto.setText("Completo");
+        rdCompleto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rdCompletoActionPerformed(evt);
+            }
+        });
 
+        buttonGroup1.add(rdBandeja);
         rdBandeja.setText("Bandeja");
+        rdBandeja.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rdCompletoActionPerformed(evt);
+            }
+        });
 
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         jLabel5.setText("Sopa");
@@ -113,12 +158,8 @@ public class FrmPrincipal extends javax.swing.JFrame {
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         jLabel6.setText("Principio");
 
-        cmbPrincipio.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         jLabel7.setText("Carne");
-
-        cmbCarne.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         chkEnsalada.setSelected(true);
         chkEnsalada.setText("Ensalada");
@@ -129,35 +170,28 @@ public class FrmPrincipal extends javax.swing.JFrame {
             }
         });
 
-        cmbEnsalada.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
         jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         jLabel8.setText("Jugo");
 
-        cmbJugo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
-        btnAgregarAdicional.setText("Agregar adicional");
-
-        tblAdicionales.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null}
-            },
-            new String [] {
-                "Nombre", "Precio"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
+        btnAgregarAdicional.setText("Agregar");
+        btnAgregarAdicional.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAgregarAdicionalActionPerformed(evt);
             }
         });
+
         jScrollPane3.setViewportView(tblAdicionales);
+
+        jLabel9.setFont(new java.awt.Font("Tahoma", 1, 10)); // NOI18N
+        jLabel9.setText("Adicionales");
+
+        btnGuardar.setText("Guardar");
+        btnGuardar.setEnabled(false);
+        btnGuardar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGuardarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -178,7 +212,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
                                 .addComponent(rdCompleto)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(rdBandeja)
-                                .addGap(0, 0, Short.MAX_VALUE))))
+                                .addGap(0, 58, Short.MAX_VALUE))))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -197,9 +231,12 @@ public class FrmPrincipal extends javax.swing.JFrame {
                         .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(cmbJugo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(btnAgregarAdicional, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                        .addComponent(cmbAdicional, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnAgregarAdicional))
+                    .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnGuardar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -238,10 +275,15 @@ public class FrmPrincipal extends javax.swing.JFrame {
                     .addComponent(jLabel8)
                     .addComponent(cmbJugo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnAgregarAdicional)
+                .addComponent(jLabel9)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(26, Short.MAX_VALUE))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cmbAdicional, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnAgregarAdicional))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnGuardar))
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -278,7 +320,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 329, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnAgregarPedido))))
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -291,11 +333,11 @@ public class FrmPrincipal extends javax.swing.JFrame {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 692, Short.MAX_VALUE)
+            .addGap(0, 747, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 359, Short.MAX_VALUE)
+            .addGap(0, 397, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("Tablas maestras", jPanel2);
@@ -306,8 +348,152 @@ public class FrmPrincipal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void chkEnsaladaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkEnsaladaActionPerformed
-        // TODO add your handling code here:
+        if (!chkEnsalada.isSelected()) {
+            cmbEnsalada.setEnabled(false);
+            cmbEnsalada.setSelectedIndex(-1);
+        } else {
+            cmbEnsalada.setEnabled(true);
+        }
     }//GEN-LAST:event_chkEnsaladaActionPerformed
+
+    private void rdCompletoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdCompletoActionPerformed
+        if (rdCompleto.isSelected()) {
+            cmbSopa.setEnabled(true);
+        } else {
+            cmbSopa.setEnabled(false);
+            cmbSopa.setSelectedIndex(-1);
+        }
+    }//GEN-LAST:event_rdCompletoActionPerformed
+
+    private void lstMesasValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lstMesasValueChanged
+        var mesa = lstMesas.getSelectedValue();
+        lstPedido.removeAll();
+        if (mesa != null) {
+            try {
+                var pedidos = controlador.listarPedidosDeMesa(mesa);
+                var model = new DefaultListModel<Pedido>();
+                model.addAll(pedidos);
+                lstPedido.setModel(model);
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error trabajando con la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
+            } catch (ObjetoNoExistenteException ex) {
+                JOptionPane.showMessageDialog(this, "No hay pedidos para esta mesa", "Error", JOptionPane.WARNING_MESSAGE);
+            }
+            btnAgregarPedido.setEnabled(true);
+        } else {
+            btnAgregarPedido.setEnabled(false);
+        }
+    }//GEN-LAST:event_lstMesasValueChanged
+
+    private void lstPedidoValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lstPedidoValueChanged
+        var pedido = lstPedido.getSelectedValue();
+        if (pedido != null) {
+            asignarEstadoCampos(true);
+            txtCliente.setText(pedido.getCliente());
+            
+            if (pedido.getOpcion() instanceof Completo) {
+                var completo = (Completo) pedido.getOpcion();
+                rdCompleto.setSelected(true);
+                
+                cmbSopa.setSelectedItem(completo.getSopa());
+            } else {
+                rdBandeja.setSelected(true);
+            }
+            rdCompletoActionPerformed(null);
+            
+            cmbPrincipio.setSelectedItem(pedido.getOpcion().getPrincipio());
+            
+            cmbCarne.setSelectedItem(pedido.getOpcion().getCarne());
+            
+            if (pedido.getOpcion().getEnsalada() != null) {
+                chkEnsalada.setSelected(true);
+                cmbEnsalada.setSelectedItem(pedido.getOpcion().getEnsalada());
+            } else {
+                chkEnsalada.setSelected(false);
+            }
+            chkEnsaladaActionPerformed(null);
+            
+            cmbJugo.setSelectedItem(pedido.getOpcion().getJugo());
+            
+            tblAdicionales.setModel(new AdicionalModel(pedido.getAdicionales()));
+        } else {
+            limpiarCampos();
+            asignarEstadoCampos(false);
+        }
+    }//GEN-LAST:event_lstPedidoValueChanged
+
+    private void btnAgregarPedidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarPedidoActionPerformed
+        lstPedido.clearSelection();
+        asignarEstadoCampos(true);
+        txtCliente.requestFocus();
+        btnGuardar.setEnabled(true);
+    }//GEN-LAST:event_btnAgregarPedidoActionPerformed
+
+    private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
+        // TODO Validar campos
+
+        // Carga el pedido
+        OpcionPedido opcion = null;
+        if (rdCompleto.isSelected()) {
+            opcion = new Completo(12_000);
+            
+            ((Completo) opcion).setSopa((Sopa) cmbSopa.getSelectedItem());
+        } else {
+            opcion = new Bandeja(10_000);
+        }
+        opcion.setPrincipio((Principio) cmbPrincipio.getSelectedItem());
+        opcion.setCarne((Carne) cmbCarne.getSelectedItem());
+        if (chkEnsalada.isSelected()) {
+            opcion.setEnsalada((Ensalada) cmbEnsalada.getSelectedItem());
+        }
+        opcion.setJugo((Jugo) cmbJugo.getSelectedItem());
+        
+        var pedido = new Pedido(txtCliente.getText().trim(), opcion);
+        pedido.setMesa(lstMesas.getSelectedValue());
+        
+        try {
+            // Envia a guardar a la base de datos
+            controlador.guardarPedido(pedido);
+
+            // Actualiza la lista de pedidos de la mesa seleccionada
+            lstMesasValueChanged(null);
+            
+            asignarEstadoCampos(false);
+            limpiarCampos();
+            btnGuardar.setEnabled(false);
+            
+            JOptionPane.showMessageDialog(this, "Pedido guardado de manera exitosa");
+            
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error trabajando con la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+    }//GEN-LAST:event_btnGuardarActionPerformed
+
+    private void btnAgregarAdicionalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarAdicionalActionPerformed
+        // Validar campo
+        if (cmbAdicional.getSelectedIndex() == -1) {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar un producto adicional", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        try {
+            // Envio a guardar el adicional
+            var pedido = lstPedido.getSelectedValue();
+            var adicional = (Adicional) cmbAdicional.getSelectedItem();
+            controlador.agregarAdicionalPedido(pedido, adicional);
+
+            // Agregar el adicional a la tabla visual
+            // Limpar el adicional
+            cmbAdicional.setSelectedIndex(-1);
+            
+            JOptionPane.showMessageDialog(this, "Adicional agregado de manera exitosa");
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error trabajando con la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        
+
+    }//GEN-LAST:event_btnAgregarAdicionalActionPerformed
 
     /**
      * @param args the command line arguments
@@ -347,11 +533,14 @@ public class FrmPrincipal extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAgregarAdicional;
     private javax.swing.JButton btnAgregarPedido;
+    private javax.swing.JButton btnGuardar;
+    private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JCheckBox chkEnsalada;
-    private javax.swing.JComboBox<String> cmbCarne;
-    private javax.swing.JComboBox<String> cmbEnsalada;
-    private javax.swing.JComboBox<String> cmbJugo;
-    private javax.swing.JComboBox<String> cmbPrincipio;
+    private javax.swing.JComboBox<Adicional> cmbAdicional;
+    private javax.swing.JComboBox<Carne> cmbCarne;
+    private javax.swing.JComboBox<Ensalada> cmbEnsalada;
+    private javax.swing.JComboBox<Jugo> cmbJugo;
+    private javax.swing.JComboBox<Principio> cmbPrincipio;
     private javax.swing.JComboBox<Sopa> cmbSopa;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -361,6 +550,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -369,7 +559,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JList<Mesa> lstMesas;
-    private javax.swing.JList<String> lstPedido;
+    private javax.swing.JList<Pedido> lstPedido;
     private javax.swing.JRadioButton rdBandeja;
     private javax.swing.JRadioButton rdCompleto;
     private javax.swing.JTable tblAdicionales;
@@ -384,11 +574,62 @@ public class FrmPrincipal extends javax.swing.JFrame {
             var model = new DefaultListModel<Mesa>();
             model.addAll(mesas);
             lstMesas.setModel(model);
-            
+
             // Cargar opciones de Sopa
+            cmbSopa.removeAllItems();
+            controlador.listarSopas()
+                    .forEach(cmbSopa::addItem);
+            
+            cmbPrincipio.removeAllItems();
+            controlador.listarPrincipios()
+                    .forEach(cmbPrincipio::addItem);
+            
+            cmbCarne.removeAllItems();
+            controlador.listarCarnes()
+                    .forEach(cmbCarne::addItem);
+            
+            cmbEnsalada.removeAllItems();
+            controlador.listarEnsaladas()
+                    .forEach(cmbEnsalada::addItem);
+            
+            cmbJugo.removeAllItems();
+            controlador.listarJugos()
+                    .forEach(cmbJugo::addItem);
+            
+            cmbAdicional.removeAllItems();
+            controlador.listarAdicionales()
+                    .forEach(cmbAdicional::addItem);
             
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Error trabajando con la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+    
+    private void asignarEstadoCampos(boolean habilitado) {
+        txtCliente.setEditable(habilitado);
+        rdCompleto.setEnabled(habilitado);
+        rdBandeja.setEnabled(habilitado);
+        cmbSopa.setEnabled(habilitado);
+        cmbPrincipio.setEnabled(habilitado);
+        cmbCarne.setEnabled(habilitado);
+        chkEnsalada.setEnabled(habilitado);
+        cmbEnsalada.setEnabled(habilitado);
+        cmbJugo.setEnabled(habilitado);
+        cmbAdicional.setEnabled(habilitado);
+        btnAgregarAdicional.setEnabled(habilitado);
+    }
+    
+    private void limpiarCampos() {
+        txtCliente.setText("");
+        cmbSopa.setSelectedIndex(-1);
+        cmbPrincipio.setSelectedIndex(-1);
+        cmbCarne.setSelectedIndex(-1);
+        chkEnsalada.setSelected(true);
+        cmbEnsalada.setSelectedIndex(-1);
+        cmbJugo.setSelectedIndex(-1);
+        cmbAdicional.setSelectedIndex(-1);
+
+        // TODO Limpar tabla adicionales
+        tblAdicionales.setModel(new AdicionalModel(new ArrayList<>()));
     }
 }

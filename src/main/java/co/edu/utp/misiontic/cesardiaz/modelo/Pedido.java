@@ -58,6 +58,14 @@ public class Pedido {
         this.adicionales.add(adicional);
     }
 
+    public void setAdicionales(List<Adicional> adicionales) {
+        this.adicionales = adicionales;
+    }
+
+    public List<Adicional> getAdicionales() {
+        return adicionales;
+    }
+    
     public Integer calcularValor() {
         var total = opcion.getPrecio();
         total += adicionales.stream()
@@ -74,7 +82,7 @@ public class Pedido {
 
     @Override
     public String toString() {
-        return "Pedido [cliente=" + cliente + ", estado=" + estado + ", opcion=" + opcion + "]";
+        return cliente;
     }
-    
+
 }

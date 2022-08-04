@@ -1,9 +1,12 @@
 package co.edu.utp.misiontic.cesardiaz.controlador;
 
+import co.edu.utp.misiontic.cesardiaz.excepcion.ObjetoNoExistenteException;
+import co.edu.utp.misiontic.cesardiaz.modelo.Adicional;
 import co.edu.utp.misiontic.cesardiaz.modelo.Carne;
 import co.edu.utp.misiontic.cesardiaz.modelo.Ensalada;
 import co.edu.utp.misiontic.cesardiaz.modelo.Jugo;
 import co.edu.utp.misiontic.cesardiaz.modelo.Mesa;
+import co.edu.utp.misiontic.cesardiaz.modelo.Pedido;
 import co.edu.utp.misiontic.cesardiaz.modelo.Principio;
 import co.edu.utp.misiontic.cesardiaz.modelo.Sopa;
 import co.edu.utp.misiontic.cesardiaz.modelo.dao.MesaDao;
@@ -55,5 +58,21 @@ public class RestauranteGUIController {
 
     public List<Jugo> listarJugos() throws SQLException {
         return alimentoDao.listarJugos();
+    }
+
+    public List<Adicional> listarAdicionales() throws SQLException {
+        return alimentoDao.listarAdicionales();
+    }
+    
+    public List<Pedido> listarPedidosDeMesa(Mesa mesa) throws SQLException, ObjetoNoExistenteException {
+        return pedidoDao.listarPedidos(mesa);
+    }
+
+    public void guardarPedido(Pedido pedido) throws SQLException {
+        pedidoDao.crear(pedido);
+    }
+
+    public void agregarAdicionalPedido(Pedido pedido, Adicional adicional) throws SQLException {
+        pedidoDao.agregarAdicional(pedido, adicional);
     }
 }

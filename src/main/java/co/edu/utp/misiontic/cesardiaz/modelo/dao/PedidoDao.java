@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.edu.utp.misiontic.cesardiaz.excepcion.ObjetoNoExistenteException;
+import co.edu.utp.misiontic.cesardiaz.modelo.Adicional;
 import co.edu.utp.misiontic.cesardiaz.modelo.Bandeja;
 import co.edu.utp.misiontic.cesardiaz.modelo.Completo;
 import co.edu.utp.misiontic.cesardiaz.modelo.EstadoPedido;
@@ -28,7 +29,7 @@ public class PedidoDao {
         PreparedStatement pstmt = JDBCUtilities.getConnection()
                 .prepareStatement(
                         "INSERT INTO Pedido (id, cliente, estado, id_mesa, id_tipo_opcion, id_sopa, id_principio, id_carne, id_ensalada, id_jugo)"
-                                + " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+                        + " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
 
         pstmt.setInt(1, generarConsecutivo());
         pstmt.setString(2, pedido.getCliente());
@@ -51,7 +52,6 @@ public class PedidoDao {
         pstmt.executeUpdate();
 
         pstmt.close();
-
     }
 
     public List<Pedido> listarPedidos(Mesa mesa) throws SQLException, ObjetoNoExistenteException {
@@ -77,12 +77,15 @@ public class PedidoDao {
                 opcion.setCarne(alimentoDao.consultarCarne(rset.getInt("id_carne")));
                 if (rset.getString("id_ensalada") != null) {
                     opcion.setEnsalada(alimentoDao.consultarEnsalada(rset.getInt("id_ensalada")));
-                } 
+                }
                 opcion.setJugo(alimentoDao.consultarJugo(rset.getInt("id_jugo")));
 
                 var pedido = new Pedido(rset.getString("cliente"), opcion);
                 pedido.setId(rset.getInt("id"));
                 pedido.setEstado(EstadoPedido.valueOf(rset.getString("estado")));
+
+                pedido.setAdicionales(listarAdicionalesPedido(pedido));
+
                 respuesta.add(pedido);
             }
 
@@ -139,5 +142,43 @@ public class PedidoDao {
                 pstmt.close();
             }
         }
+    }
+
+    public void agregarAdicional(Pedido pedido, Adicional adicional) throws SQLException {
+        PreparedStatement pstmt = null;
+        try {
+            pstmt = JDBCUtilities.getConnection()
+                    .prepareStatement("INSERT INTO PedidoAdicional (id_pedido, id_adicional)"
+                            + " VALUES(?, ?);");
+
+            pstmt.setInt(1, pedido.getId());
+            pstmt.setInt(2, adicional.getId());
+            pstmt.executeUpdate();
+        } finally {
+            if (pstmt != null) {
+                pstmt.close();
+            }
+        }
+    }
+
+    private List<Adicional> listarAdicionalesPedido(Pedido pedido) throws SQLException {
+        var sql = String.format("SELECT *"
+                + " FROM Adicional"
+                + " WHERE id IN ("
+                + "    SELECT id_adicional"
+                + "    FROM PedidoAdicional"
+                + "    WHERE id_pedido = %d"
+                + ")", pedido.getId());
+        return JDBCUtilities.listar(sql, rset -> {
+            Adicional opcion = null;
+            try {
+                opcion = new Adicional(rset.getString("nombre"), rset.getInt("precio"));
+                opcion.setId(rset.getInt("id"));
+            } catch (SQLException ex) {
+                opcion = null;
+            }
+
+            return opcion;
+        });
     }
 }

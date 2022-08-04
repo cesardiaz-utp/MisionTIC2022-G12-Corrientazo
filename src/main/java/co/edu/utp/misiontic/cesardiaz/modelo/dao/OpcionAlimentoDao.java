@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.edu.utp.misiontic.cesardiaz.excepcion.ObjetoNoExistenteException;
+import co.edu.utp.misiontic.cesardiaz.modelo.Adicional;
 import co.edu.utp.misiontic.cesardiaz.modelo.Carne;
 import co.edu.utp.misiontic.cesardiaz.modelo.Ensalada;
 import co.edu.utp.misiontic.cesardiaz.modelo.Jugo;
@@ -16,17 +17,32 @@ import co.edu.utp.misiontic.cesardiaz.util.JDBCUtilities;
 
 public class OpcionAlimentoDao {
 
+    public List<Adicional> listarAdicionales() throws SQLException {
+        var sql = "SELECT * FROM Adicional";
+        return JDBCUtilities.listar(sql, rset -> {
+            Adicional opcion = null;
+            try {
+                opcion = new Adicional(rset.getString("nombre"), rset.getInt("precio"));
+                opcion.setId(rset.getInt("id"));
+            } catch (SQLException ex) {
+                opcion = null;
+            }
+
+            return opcion;
+        });
+    }
+
     public List<Sopa> listarSopas() throws SQLException {
         var sql = "SELECT * FROM Sopa";
         return JDBCUtilities.listar(sql, rset -> {
-            Sopa opcion =  null;
+            Sopa opcion = null;
             try {
                 opcion = new Sopa(rset.getString("nombre"));
                 opcion.setId(rset.getInt("id"));
             } catch (SQLException ex) {
                 opcion = null;
             }
-            
+
             return opcion;
         });
     }
@@ -34,14 +50,14 @@ public class OpcionAlimentoDao {
     public List<Principio> listarPrincipios() throws SQLException {
         var sql = "SELECT * FROM Principio";
         return JDBCUtilities.listar(sql, rset -> {
-            Principio opcion =  null;
+            Principio opcion = null;
             try {
                 opcion = new Principio(rset.getString("nombre"));
                 opcion.setId(rset.getInt("id"));
             } catch (SQLException ex) {
                 opcion = null;
             }
-            
+
             return opcion;
         });
     }
@@ -232,5 +248,5 @@ public class OpcionAlimentoDao {
         }
         return respuesta;
     }
-    
+
 }
