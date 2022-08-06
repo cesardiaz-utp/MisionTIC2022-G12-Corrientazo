@@ -21,6 +21,12 @@ public class AdicionalModel extends AbstractTableModel {
         this.datos = datos;
         fireTableDataChanged();
     }
+    
+    public void addRow(Adicional adicional){
+        this.datos.add(adicional);
+        var row = getRowCount() - 1;
+        fireTableRowsInserted(row, row);
+    }
 
     @Override
     public String getColumnName(int column) {

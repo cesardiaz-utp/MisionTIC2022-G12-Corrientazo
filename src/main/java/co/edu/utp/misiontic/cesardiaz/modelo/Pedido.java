@@ -82,7 +82,9 @@ public class Pedido {
 
     @Override
     public String toString() {
-        return cliente;
+        return String.format("[%s] %s", 
+                estado == EstadoPedido.PENDIENTE_ENTREGA ? " " : "X", 
+                cliente);
     }
 
 }
